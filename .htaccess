@@ -1,0 +1,19 @@
+# Enable RewriteEngine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+</IfModule>
+
+# PHP Settings
+php_value session.cookie_domain ""
+php_flag display_errors Off
+php_flag log_errors On
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Directory Index
+DirectoryIndex index.php index.html
