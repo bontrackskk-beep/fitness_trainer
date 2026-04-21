@@ -1,8 +1,8 @@
 <?php
-$host = getenv('DB_HOST') ?: "localhost";
-$user = getenv('DB_USER') ?: "root";
-$pass = getenv('DB_PASS') ?: "";
-$dbname = getenv('DB_NAME') ?: "fitness_trainer";
+$host = "sql100.infinityfree.com";
+$user = "if0_41715306";
+$pass = "Sudhangmail";
+$dbname = "Zenfit";
 
 $conn = mysqli_connect($host, $user, $pass, $dbname);
 
