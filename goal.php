@@ -15,6 +15,11 @@ if(isset($_POST['goal'])){
     header("Location: dashboard.php");
     exit();
 }
+
+$user_id = $_SESSION['user_id'];
+$current_goal_result = mysqli_query($conn, "SELECT goal FROM users WHERE id='$user_id'");
+$user_row = mysqli_fetch_assoc($current_goal_result);
+$current_goal = $user_row['goal'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -312,6 +317,21 @@ if(isset($_POST['goal'])){
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
         }
 
+        .goal-card--selected {
+            border-color: #ff7a18 !important;
+            box-shadow: 0 0 0 2px rgba(255, 122, 24, 0.4), 0 18px 40px rgba(0, 0, 0, 0.28);
+            background: linear-gradient(180deg, rgba(255, 122, 24, 0.12), rgba(255, 255, 255, 0.04)), rgba(8, 19, 29, 0.88);
+        }
+
+        .goal-card--selected .goal-card-code {
+            background: linear-gradient(135deg, rgba(255, 179, 71, 0.5), rgba(255, 122, 24, 0.5)) !important;
+        }
+
+        .goal-card--selected .goal-card-tag {
+            border-color: #ff7a18;
+            color: #ff7a18;
+        }
+
         .goal-card--wide {
             grid-column: 1 / -1;
             min-height: 150px;
@@ -496,7 +516,7 @@ if(isset($_POST['goal'])){
             </div>
 
             <form method="POST" class="goal-grid">
-                <button type="submit" name="goal" value="Weight Loss" class="goal-card">
+                <button type="submit" name="goal" value="Weight Loss" class="goal-card<?php echo ($current_goal === 'Weight Loss') ? ' goal-card--selected' : ''; ?>">
                     <div>
                         <div class="goal-card-top">
                             <span class="goal-card-code">WL</span>
@@ -507,11 +527,11 @@ if(isset($_POST['goal'])){
                     </div>
                     <div class="goal-card-footer">
                         <span>Best for consistency</span>
-                        <span>Select Goal</span>
+                        <span><?php echo ($current_goal === 'Weight Loss') ? 'Selected' : 'Select Goal'; ?></span>
                     </div>
                 </button>
 
-                <button type="submit" name="goal" value="Weight Gain" class="goal-card">
+                <button type="submit" name="goal" value="Weight Gain" class="goal-card<?php echo ($current_goal === 'Weight Gain') ? ' goal-card--selected' : ''; ?>">
                     <div>
                         <div class="goal-card-top">
                             <span class="goal-card-code">WG</span>
@@ -522,11 +542,11 @@ if(isset($_POST['goal'])){
                     </div>
                     <div class="goal-card-footer">
                         <span>Best for bulk phases</span>
-                        <span>Select Goal</span>
+                        <span><?php echo ($current_goal === 'Weight Gain') ? 'Selected' : 'Select Goal'; ?></span>
                     </div>
                 </button>
 
-                <button type="submit" name="goal" value="Fitness" class="goal-card">
+                <button type="submit" name="goal" value="Fitness" class="goal-card<?php echo ($current_goal === 'Fitness') ? ' goal-card--selected' : ''; ?>">
                     <div>
                         <div class="goal-card-top">
                             <span class="goal-card-code">FT</span>
@@ -537,11 +557,11 @@ if(isset($_POST['goal'])){
                     </div>
                     <div class="goal-card-footer">
                         <span>Best everyday option</span>
-                        <span>Select Goal</span>
+                        <span><?php echo ($current_goal === 'Fitness') ? 'Selected' : 'Select Goal'; ?></span>
                     </div>
                 </button>
 
-                <button type="submit" name="goal" value="Yoga" class="goal-card">
+                <button type="submit" name="goal" value="Yoga" class="goal-card<?php echo ($current_goal === 'Yoga') ? ' goal-card--selected' : ''; ?>">
                     <div>
                         <div class="goal-card-top">
                             <span class="goal-card-code">YG</span>
@@ -552,11 +572,11 @@ if(isset($_POST['goal'])){
                     </div>
                     <div class="goal-card-footer">
                         <span>Best for recovery</span>
-                        <span>Select Goal</span>
+                        <span><?php echo ($current_goal === 'Yoga') ? 'Selected' : 'Select Goal'; ?></span>
                     </div>
                 </button>
 
-                <button type="submit" name="goal" value="Muscle Gain" class="goal-card goal-card--wide">
+                <button type="submit" name="goal" value="Muscle Gain" class="goal-card goal-card--wide<?php echo ($current_goal === 'Muscle Gain') ? ' goal-card--selected' : ''; ?>">
                     <div>
                         <div class="goal-card-top">
                             <span class="goal-card-code">MG</span>
@@ -567,7 +587,7 @@ if(isset($_POST['goal'])){
                     </div>
                     <div class="goal-card-footer">
                         <span>Best for hypertrophy focus</span>
-                        <span>Select Goal</span>
+                        <span><?php echo ($current_goal === 'Muscle Gain') ? 'Selected' : 'Select Goal'; ?></span>
                     </div>
                 </button>
             </form>

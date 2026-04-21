@@ -8,6 +8,84 @@ if(!isset($_SESSION['user_id'])){
 }
 
 $user_id = (int) $_SESSION['user_id'];
+$user_goal = '';
+
+$goal_query = mysqli_query($conn, "SELECT goal FROM users WHERE id='$user_id' LIMIT 1");
+if($goal_query && mysqli_num_rows($goal_query) > 0){
+    $user = mysqli_fetch_assoc($goal_query);
+    $user_goal = $user['goal'];
+}
+
+$goal_exercises = [
+    'Weight Loss' => [
+        'Jump rope' => '300-500 kcal per 30 min',
+        'Mountain climbers' => '250-400 kcal per 30 min',
+        'Burpees' => '280-450 kcal per 30 min',
+        'High knees' => '250-400 kcal per 30 min',
+        'Box jumps' => '240-380 kcal per 30 min',
+        'Running' => '300-500 kcal per 30 min'
+    ],
+    'Weight Gain' => [
+        'Deadlifts' => 'Strength compound',
+        'Bench press' => 'Chest strength',
+        'Squats' => 'Lower body',
+        'Pull-ups' => 'Back strength',
+        'Dumbbell rows' => 'Back volume',
+        'Overhead press' => 'Shoulder strength'
+    ],
+    'Fitness' => [
+        'Push-ups' => 'Full body',
+        'Planks' => 'Core stability',
+        'Lunges' => 'Balance',
+        'Burpees' => 'Cardio + strength',
+        'Mountain climbers' => 'Core + cardio',
+        'Rows' => 'Full body'
+    ],
+    'Yoga' => [
+        'Sun salutations' => 'Flow warmup',
+        'Warrior poses' => 'Strength + balance',
+        'Tree pose' => 'Balance',
+        'Cat-cow stretch' => 'Spine mobility',
+        'Child pose' => 'Recovery',
+        'Downward dog' => 'Full stretch'
+    ],
+    'Muscle Gain' => [
+        'Deadlifts' => 'Heavy compound',
+        'Bench press' => 'Chest mass',
+        'Squats' => 'Leg mass',
+        'Barbell rows' => 'Back thickness',
+        'Overhead press' => 'Shoulder mass',
+        'Bicep curls' => 'Isolation'
+    ]
+];
+
+$recommended_exercises = $goal_exercises[$user_goal] ?? [
+    'Push-ups' => 'Full body',
+    'Planks' => 'Core stability',
+    'Squats' => 'Lower body',
+    'Lunges' => 'Balance'
+];
+
+$user_weights = [];
+$user_dates = [];
+$user_calories = [];
+
+$chart_data = mysqli_query($conn, "SELECT * FROM progress WHERE user_id='$user_id' ORDER BY date ASC");
+if($chart_data){
+    while($row = mysqli_fetch_assoc($chart_data)){
+        $user_weights[] = (float) $row['weight'];
+        $user_calories[] = (int) $row['calories'];
+        $user_dates[] = $row['date'];
+    }
+}
+
+$history = [];
+$data = mysqli_query($conn, "SELECT * FROM progress WHERE user_id='$user_id' ORDER BY date DESC");
+if($data){
+    while($row = mysqli_fetch_assoc($data)){
+        $history[] = $row;
+    }
+}
 
 if(isset($_POST['save'])){
     $weight = mysqli_real_escape_string($conn, $_POST['weight']);
@@ -17,18 +95,7 @@ if(isset($_POST['save'])){
     mysqli_query($conn, "INSERT INTO progress(user_id, weight, calories, date) VALUES('$user_id','$weight','$calories','$date')");
 }
 
-$weights = [];
-$dates = [];
-$calories_chart = [];
 
-$chart_data = mysqli_query($conn, "SELECT * FROM progress WHERE user_id='$user_id' ORDER BY date ASC");
-if($chart_data){
-    while($row = mysqli_fetch_assoc($chart_data)){
-        $weights[] = (float) $row['weight'];
-        $calories_chart[] = (int) $row['calories'];
-        $dates[] = $row['date'];
-    }
-}
 
 $history = [];
 $data = mysqli_query($conn, "SELECT * FROM progress WHERE user_id='$user_id' ORDER BY date DESC");
@@ -69,8 +136,27 @@ if($data){
             <p class="app-eyebrow">Performance log</p>
             <h1>Track the numbers that show your consistency.</h1>
             <p>
-                Add weight and calorie entries, then review them through a cleaner chart and history table.
+                Your goal is <strong style="color:#ff7a18;"><?php echo htmlspecialchars($user_goal ?: 'Not set'); ?></strong>.
+                Recommended exercises based on your goal are shown below.
             </p>
+        </section>
+
+        <section class="app-card" style="border-color:rgba(69,212,131,0.4);">
+            <div class="app-section-head">
+                <div>
+                    <p class="app-eyebrow" style="color:#45d483;">Recommended exercises</p>
+                    <h2>Best for "<?php echo htmlspecialchars($user_goal ?: 'Fitness'); ?>"</h2>
+                </div>
+                <p>These exercises align with your selected goal for maximum results.</p>
+            </div>
+            <div class="app-grid-2">
+                <?php foreach($recommended_exercises as $exercise => $desc){ ?>
+                <div style="padding:16px; border-radius:16px; background:rgba(69,212,131,0.08); border:1px solid rgba(69,212,131,0.25);">
+                    <h3 style="margin:0;font-size:18px;color:#45d483;"><?php echo htmlspecialchars($exercise); ?></h3>
+                    <p style="margin:6px 0 0;color:#9cb2c7;font-size:14px;"><?php echo htmlspecialchars($desc); ?></p>
+                </div>
+                <?php } ?>
+            </div>
         </section>
 
         <section class="app-grid-2">
@@ -168,12 +254,12 @@ if($data){
 const ctx = document.getElementById('progressChart').getContext('2d');
 new Chart(ctx, {
     data: {
-        labels: <?php echo json_encode($dates); ?>,
+        labels: <?php echo json_encode($user_dates); ?>,
         datasets: [
             {
                 type: 'line',
                 label: 'Weight',
-                data: <?php echo json_encode($weights); ?>,
+                data: <?php echo json_encode($user_weights); ?>,
                 borderColor: '#ff7a18',
                 backgroundColor: 'rgba(255,122,24,0.18)',
                 tension: 0.35,
@@ -183,7 +269,7 @@ new Chart(ctx, {
             {
                 type: 'bar',
                 label: 'Calories',
-                data: <?php echo json_encode($calories_chart); ?>,
+                data: <?php echo json_encode($user_calories); ?>,
                 backgroundColor: 'rgba(84,210,255,0.28)',
                 borderRadius: 8,
                 yAxisID: 'y1'
