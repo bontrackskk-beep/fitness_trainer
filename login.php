@@ -1,27 +1,26 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 session_start();
 include("db.php");
 
-echo "Step 1: db included <br>";
-
 if(isset($_POST['login'])){
-    echo "Step 2: form submitted <br>";
-
     $email = $_POST['email'];
     $password = $_POST['password'];
-
-    echo "Step 3: got form values <br>";
 
     $query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' LIMIT 1");
 
     if(!$query){
-        die("SQL Error: " . mysqli_error($conn));
+        $error = "Database error";
+    } else {
+        $user = mysqli_fetch_assoc($query);
+        if($user && password_verify($password, $user['password'])){
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['email'] = $user['email'];
+            header("Location: goal.php");
+            exit;
+        } else {
+            $error = "Invalid email or password";
+        }
     }
-
-    echo "Step 4: query success <br>";
 }
 ?>
 <!DOCTYPE html>
