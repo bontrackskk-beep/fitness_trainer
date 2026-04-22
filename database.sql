@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     status VARCHAR(20) DEFAULT 'Booked',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (trainer) REFERENCES trainers(id) ON DELETE CASCADE
+    FOREIGN KEY (trainer_id) REFERENCES trainers(id) ON DELETE CASCADE
 );
 
 -- Diet plans table

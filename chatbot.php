@@ -1,4 +1,7 @@
 <?php
+session_start();
+include("db.php");
+
 function get_chatbot_response($message, $context = []) {
     $message = strtolower(trim($message));
     $user_goal = $context['user_goal'] ?? '';

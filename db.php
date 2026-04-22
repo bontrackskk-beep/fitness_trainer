@@ -1,21 +1,15 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors',1);
+
 $host = "sql100.infinityfree.com";
 $user = "if0_41715306";
 $pass = "Sudhangmail";
-$dbname = "Zenfit";
+$dbname = "if0_41715306_zenfit";
 
 $conn = mysqli_connect($host, $user, $pass, $dbname);
 
-if (!$conn) {
+if(!$conn){
     die("Connection failed: " . mysqli_connect_error());
 }
-
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
 ?>

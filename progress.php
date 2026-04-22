@@ -94,16 +94,6 @@ if(isset($_POST['save'])){
 
     mysqli_query($conn, "INSERT INTO progress(user_id, weight, calories, date) VALUES('$user_id','$weight','$calories','$date')");
 }
-
-
-
-$history = [];
-$data = mysqli_query($conn, "SELECT * FROM progress WHERE user_id='$user_id' ORDER BY date DESC");
-if($data){
-    while($row = mysqli_fetch_assoc($data)){
-        $history[] = $row;
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">

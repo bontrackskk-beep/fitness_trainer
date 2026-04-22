@@ -1,33 +1,27 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 include("db.php");
 
+echo "Step 1: db included <br>";
+
 if(isset($_POST['login'])){
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    echo "Step 2: form submitted <br>";
+
+    $email = $_POST['email'];
     $password = $_POST['password'];
+
+    echo "Step 3: got form values <br>";
 
     $query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' LIMIT 1");
 
-    if($query && mysqli_num_rows($query) > 0){
-        $user = mysqli_fetch_assoc($query);
-        $stored_password = $user['password'];
-
-        $password_matches = password_verify($password, $stored_password) || $password === $stored_password;
-
-        if($password_matches){
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-
-            if(empty($user['goal'])){
-                header("Location: goal.php");
-            } else {
-                header("Location: dashboard.php");
-            }
-            exit();
-        }
+    if(!$query){
+        die("SQL Error: " . mysqli_error($conn));
     }
 
-    $error = "Invalid email or password.";
+    echo "Step 4: query success <br>";
 }
 ?>
 <!DOCTYPE html>
@@ -90,7 +84,7 @@ if(isset($_POST['login'])){
         </section>
     </main>
 
-    <?php include('footer.php'); ?>
+    <!-- footer removed temporarily -->
 </div>
 </body>
 </html>

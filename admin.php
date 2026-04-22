@@ -1,5 +1,11 @@
 <?php
+session_start();
 include('db.php');
+
+if(!isset($_SESSION['user_id'])){
+    header("Location: login.php");
+    exit();
+}
 
 $bookings = [];
 $result = mysqli_query($conn, "SELECT * FROM bookings ORDER BY id DESC LIMIT 10");
