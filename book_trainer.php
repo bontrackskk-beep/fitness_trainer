@@ -83,7 +83,7 @@ if(isset($_POST['book']) && $trainer_id > 0){
                 <button type="submit" name="book" class="app-button">Confirm Booking</button>
             </form>
             <?php } else { ?>
-            <p class="app-empty">No valid trainer selected.</p>
+            <p class="app-empty">No valid trainers selected.</p>
             <?php } ?>
         </section>
     </main>
